@@ -1,17 +1,14 @@
-{"namespace": "avro",
+{"namespace": "avro.v0.1",
  "type": "record",
  "name": "CustomMessage",
  "fields": [
-     {"name": "id", "type": "string"},
+     {"name": "messageid", "type": "string"},
+     {"name": "sourceid", "type": "string"},
      {"name": "payload",  "type": "string"},
-     {"name": "messagetype",
-     	"type": [ "null" , { "name": "messagetype", "type": "enum", "symbols" : [ "REGISTRY" , "NOTIFICATION" , "TELEMETRY", "EXCEPTION" ] }]
-		,"default":null
-      },
-     {	
-     	"name": "attr4",
-      	"type": ["null","string"],
-	  	"default":null
-      }
+     { "name": "messagetype", "type":
+     		{"type": "enum","name": "messagetype", "symbols" : [ "REGISTRY" , "NOTIFICATION" , "TELEMETRY", "EXCEPTION" ] }
+     },
+      {
+        "name": "createdate","type": "string"}
  ]
 }

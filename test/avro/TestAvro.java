@@ -1,7 +1,11 @@
 package avro;
 
 import java.io.IOException;
+import java.text.DateFormat;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericData;
@@ -14,6 +18,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.TypeReference;
 import org.junit.Test;
 
+import io.parser.avro.AvroParser;
 import io.parser.avro.AvroUtils;
 
 import org.junit.Assert;
@@ -25,11 +30,13 @@ public class TestAvro {
 		
 		//create json
 		GenericRecord mesg = new GenericData.Record(schema);		
-		mesg.put("id", "device1");
-		mesg.put("payload", "{'type':'internal json'}");
-		mesg.put("messagetype","NOTIFICATION");
+		mesg.put("sourceid", "device1");
+		mesg.put("payload", "{\"device\":\"6c21e538-4b7b-4e87-958f-b8c868f50f2e\",\"event\":\"switch\",\"value\":\"on\",\"date\":\"2016-09-01T21:47:06.061Z\",\"name\":\"Maya's Room Camera\"}");
+		mesg.put("messagetype", "EXCEPTION");
+		mesg.put("createdate",  DateFormat.getDateInstance().format(new Date())+"");
+		mesg.put("messageid", UUID.randomUUID()+"");
 
-		System.out.println(mesg.toString());
+		System.out.println(mesg.toString().trim());
 		byte[] avro = AvroUtils.serializeJson(mesg.toString(), schema);
 		
 		///send byte array in mqtt
@@ -39,7 +46,7 @@ public class TestAvro {
 		
 		System.out.println(json);
 		
-		//Assert.assertEquals(mesg.toString(), json);
+		//Assert.assertEquals(mesg.toString().trim(), json.trim());
 		}
 	
 	enum messagetype{REGISTRY , NOTIFICATION , TELEMETRY, EXCEPTION };
@@ -49,9 +56,11 @@ public class TestAvro {
 		
 		//create json
 		GenericRecord mesg = new GenericData.Record(schema);		
-		mesg.put("id", "device1");
-		mesg.put("payload", "{'type':'internal json'}");
-		mesg.put("messagetype","REGISTRY");
+		mesg.put("sourceid", "device1");
+		mesg.put("payload", "{\"device\":\"6c21e538-4b7b-4e87-958f-b8c868f50f2e\",\"event\":\"switch\",\"value\":\"on\",\"date\":\"2016-09-01T21:47:06.061Z\",\"name\":\"Maya's Room Camera\"}");
+		mesg.put("messagetype", "EXCEPTION");
+		mesg.put("createdate",  DateFormat.getDateInstance().format(new Date())+"");
+		mesg.put("messageid", UUID.randomUUID()+"");
 
 		System.out.println(mesg.toString());
 		byte[] avro = AvroUtils.serializeJson(mesg.toString(), schema);
@@ -72,26 +81,42 @@ public class TestAvro {
 		
 		Schema schema = new Schema.Parser().parse(TestAvro.class.getResourceAsStream("/CustomMessage.avsc"));
 		GenericRecord mesg = new GenericData.Record(schema);		
-		mesg.put("id", "device1");
-		mesg.put("payload", "{'type':'internal json'}");
+		mesg.put("sourceid", "device1");
+		mesg.put("payload", "{\"device\":\"6c21e538-4b7b-4e87-958f-b8c868f50f2e\",\"event\":\"switch\",\"value\":\"on\",\"date\":\"2016-09-01T21:47:06.061Z\",\"name\":\"Maya's Room Camera\"}");
+		mesg.put("messagetype", "EXCEPTION");
+		mesg.put("createdate",  DateFormat.getDateInstance().format(new Date())+"");
+		mesg.put("messageid", UUID.randomUUID()+"");
 		System.out.println(mesg.toString());
 		
 		//create avro
 		byte[] avro = AvroUtils.serializeJson(mesg.toString(), schema);
 		
-		GenericDatumReader<CustomMessage> reader = new SpecificDatumReader<CustomMessage>(schema);	        
+		GenericDatumReader<GenericRecord> reader = new SpecificDatumReader<GenericRecord>(schema);	        
 		Decoder decoder = DecoderFactory.get().binaryDecoder(avro, null);
-		CustomMessage msg1 = reader.read(null, decoder);
+		GenericRecord msg1 = reader.read(null, decoder);
 	    
-		CustomMessage message = new CustomMessage();
-		message.setId("device1");
-		message.setPayload("{'type':'internal json'}");
-		
-		Assert.assertEquals(msg1, message);
+		Assert.assertEquals(msg1, mesg);
 		
 	}
 	
-
+	@Test public void testParser() throws Exception{
+		Schema schema = new Schema.Parser().parse(TestAvro.class.getResourceAsStream("/CustomMessage.avsc"));
+		GenericRecord mesg = new GenericData.Record(schema);		
+		mesg.put("sourceid", "device1");
+		mesg.put("payload", "{\"device\":\"6c21e538-4b7b-4e87-958f-b8c868f50f2e\",\"event\":\"switch\",\"value\":\"on\",\"date\":\"2016-09-01T21:47:06.061Z\",\"name\":\"Maya's Room Camera\"}");
+		mesg.put("messagetype", "EXCEPTION");
+		mesg.put("createdate",  DateFormat.getDateInstance().format(new Date())+"");
+		mesg.put("messageid", UUID.randomUUID()+"");
+		System.out.println(mesg.toString());
+		
+		//create avro
+		byte[] avro = AvroUtils.serializeJson(mesg.toString(), schema);
+		
+		AvroParser<Map<String,?>> avroParser = new AvroParser<Map<String,?>>(schema);
+		Map<String,?> map = avroParser.parse(avro, new HashMap<String,Object>() );
+		System.out.println(map.toString());
+		Assert.assertEquals(map.get("payload"), mesg.get("payload"));
+	}
 	
-
+	
 }

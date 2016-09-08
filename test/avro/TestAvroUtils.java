@@ -14,7 +14,7 @@ public class TestAvroUtils {
 	
 	@Test public void testGeneratedJavaObjectCreate() throws IOException{
 		
-		Schema schema = new Schema.Parser().parse(TestAvro.class.getResourceAsStream("/CustomMessage.avsc"));
+		Schema schema = new Schema.Parser().parse(TestAvro.class.getResourceAsStream("/CustomMessage_ORIG.avsc"));
 		GenericRecord mesg = new GenericData.Record(schema);		
 		mesg.put("id", "device1");
 		mesg.put("payload", "{'type':'internal json'}");
@@ -31,7 +31,7 @@ public class TestAvroUtils {
 	
 	@Test public void testGenericJavaObjectCreate() throws IOException{
 		
-		Schema schema = new Schema.Parser().parse(TestAvro.class.getResourceAsStream("/CustomMessage.avsc"));
+		Schema schema = new Schema.Parser().parse(TestAvro.class.getResourceAsStream("/CustomMessage_ORIG.avsc"));
 		GenericRecord mesg = new GenericData.Record(schema);		
 		mesg.put("id", "device1");
 		mesg.put("payload", "{'type':'internal json'}");
@@ -47,7 +47,7 @@ public class TestAvroUtils {
 	
 	@Test public void testSpecificJavaObjectCreate() throws IOException{
 		
-		Schema schema = new Schema.Parser().parse(TestAvro.class.getResourceAsStream("/CustomMessage.avsc"));
+		Schema schema = new Schema.Parser().parse(TestAvro.class.getResourceAsStream("/CustomMessage_ORIG.avsc"));
 		GenericRecord mesg = new GenericData.Record(schema);		
 		mesg.put("id", "device1");
 		mesg.put("payload", "{'type':'internal json'}");
@@ -65,7 +65,7 @@ public class TestAvroUtils {
 	
 	@Test public void testGeneratedJavaObjectSerialize() throws IOException{
 		
-		Schema schema = new Schema.Parser().parse(TestAvro.class.getResourceAsStream("/CustomMessage.avsc"));
+		Schema schema = new Schema.Parser().parse(TestAvro.class.getResourceAsStream("/CustomMessage_ORIG.avsc"));
 		GenericRecord mesg = new GenericData.Record(schema);		
 		mesg.put("id", "device1");
 		mesg.put("payload", "{'type':'internal json'}");
@@ -91,7 +91,7 @@ public class TestAvroUtils {
 	
 	@Test public void testGenericJavaObjectSerialize() throws IOException{
 		
-		Schema schema = new Schema.Parser().parse(TestAvro.class.getResourceAsStream("/CustomMessage.avsc"));
+		Schema schema = new Schema.Parser().parse(TestAvro.class.getResourceAsStream("/CustomMessage_ORIG.avsc"));
 		GenericRecord mesg = new GenericData.Record(schema);		
 		mesg.put("id", "device1");
 		mesg.put("payload", "{'type':'internal json'}");
@@ -115,7 +115,7 @@ public class TestAvroUtils {
 	
 	@Test public void testSpecificJavaObjectSerialize() throws IOException{
 		
-		Schema schema = new Schema.Parser().parse(TestAvro.class.getResourceAsStream("/CustomMessage.avsc"));
+		Schema schema = new Schema.Parser().parse(TestAvro.class.getResourceAsStream("/CustomMessage_ORIG.avsc"));
 		GenericRecord mesg = new GenericData.Record(schema);		
 		mesg.put("id", "device1");
 		mesg.put("payload", "{'type':'internal json'}");
@@ -135,6 +135,33 @@ public class TestAvroUtils {
 		
 		Assert.assertEquals(mesg.get("payload").toString(),genericTest.get("payload").toString());
 		
+	}
+	
+	@Test public void testEnumGenericJavaObjectSerialize() throws IOException{
+		
+		Schema schema = new Schema.Parser().parse(TestAvro.class.getResourceAsStream("/CustomMessage_With_ENUM.avsc"));
+		GenericRecord mesg = new GenericData.Record(schema);		
+		mesg.put("messageid", "device1");
+		mesg.put("payload", "{'type':'internal json'}");
+		mesg.put("messagetype", "NOTIFICATION");
+		mesg.put("createdate", null);
+		mesg.put("sourceid", "sourcid");
+		//mesg.put("attr4", null);
+		//create avro
+		byte[] avro = AvroUtils.serializeJson(mesg.toString(), schema);
+		
+		//avro to java
+		GenericRecord msg1 = AvroUtils.avroToJava(avro, schema);
+		
+		Assert.assertEquals(msg1.get("payload").toString(),mesg.get("payload").toString());
+		
+		byte[] avro2 = AvroUtils.serializeJava(msg1, schema);
+		
+		Assert.assertNotEquals(avro,avro2);//tests data abstraction 
+		
+		GenericRecord genericTest = AvroUtils.avroToJava(avro2, schema);
+		
+		Assert.assertEquals(mesg.get("payload").toString(),genericTest.get("payload").toString());
 	}
 	
 	

@@ -1,4 +1,4 @@
-{"namespace": "avro",
+{"namespace": "avro.v1",
  "type": "record",
  "name": "CustomMessage",
  "fields": [

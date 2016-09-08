@@ -29,7 +29,7 @@ public class TestAvroPhoenixMap {
 		String dbURL = "org.apache.derby.jdbc.EmbeddedDriver";
 
 		try {
-			Class.forName(dbURL).newInstance();
+			Class.class.forName(dbURL).newInstance();
 			conn = DriverManager.getConnection("jdbc:derby:" + "droolsDB;create=true");
 		} catch (Exception except) {
 			except.printStackTrace();
@@ -57,7 +57,7 @@ public class TestAvroPhoenixMap {
 	
 	@Test public void testSpecificJavaObjectSerialize() throws Exception{
 		
-		Schema schema = new Schema.Parser().parse(TestAvro.class.getResourceAsStream("/CustomMessage.avsc"));
+		Schema schema = new Schema.Parser().parse(Class.class.getResourceAsStream("/CustomMessage.avsc"));
 		GenericRecord mesg = new GenericData.Record(schema);		
 		mesg.put("id", "device1");
 		mesg.put("payload", "{'type':'internal json'}");

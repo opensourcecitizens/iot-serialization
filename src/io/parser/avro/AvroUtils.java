@@ -1,7 +1,9 @@
 package io.parser.avro;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericDatumReader;
@@ -73,7 +75,8 @@ public class AvroUtils <T> {
         DatumWriter<Object> writer = new GenericDatumWriter<>(schema);
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         Encoder encoder = EncoderFactory.get().jsonEncoder(schema, output);
-        Decoder decoder = DecoderFactory.get().binaryDecoder(avro, null);
+        InputStream bis = new ByteArrayInputStream(avro);
+        Decoder decoder = DecoderFactory.get().binaryDecoder(bis, null);
         Object datum = reader.read(null, decoder);
         writer.write(datum, encoder);
         encoder.flush();
@@ -92,8 +95,9 @@ public class AvroUtils <T> {
      */
     public static <GenericDataRecord>  GenericDataRecord avroToJava(byte[] avro, Schema schema) throws IOException {
 
-        GenericDatumReader<GenericDataRecord> reader = new SpecificDatumReader<GenericDataRecord>(schema);  
-        Decoder decoder = DecoderFactory.get().binaryDecoder(avro, null);
+        GenericDatumReader<GenericDataRecord> reader = new SpecificDatumReader<GenericDataRecord>(schema); 
+        InputStream bis = new ByteArrayInputStream(avro);
+        Decoder decoder = DecoderFactory.get().binaryDecoder(bis, null);
         GenericDataRecord genericDatum = reader.read(null, decoder);
   
         return genericDatum;

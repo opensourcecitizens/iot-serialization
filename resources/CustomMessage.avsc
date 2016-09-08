@@ -1,9 +1,14 @@
-{"namespace": "avro",
+{"namespace": "avro.v0.1",
  "type": "record",
- "name": "CustomMessage",
+ "name": "NeustarMessage",
  "fields": [
-     {"name": "id", "type": "string"},
+     {"name": "messageid", "type": "string"},
+     {"name": "sourceid", "type": "string"},
      {"name": "payload",  "type": "string"},
-     {"name": "messagetype","type": "string"}
+     { "name": "messagetype", "type":
+     		{"type": "enum","name": "messagetype", "symbols" : [ "REGISTRY" , "NOTIFICATION" , "TELEMETRY", "EXCEPTION" ] }
+     },
+      {
+        "name": "createdate","type": "string"}
  ]
 }
