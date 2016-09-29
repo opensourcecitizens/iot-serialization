@@ -1,6 +1,8 @@
 package avro;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -22,12 +24,21 @@ import io.parser.avro.AvroParser;
 import io.parser.avro.AvroUtils;
 
 import org.junit.Assert;
+import org.junit.Before;
 
 public class TestAvro {	
+	Schema schema  = null;
+	String schemaUrl = "https://s3-us-west-2.amazonaws.com/iot-dev-avroschema/versions/0.0.1_20160928/NeustarMessage.avsc";
+	
+	@Before
+	public void init() throws IOException{
+		InputStream stream = new URL(schemaUrl).openStream();
+		 schema = new Schema.Parser().parse(stream);
+	}
+	
 	
 	@Test public void testAvroJsonConversion() throws IOException{
-		Schema schema = new Schema.Parser().parse(TestAvro.class.getResourceAsStream("/CustomMessage.avsc"));
-		
+	
 		//create json
 		GenericRecord mesg = new GenericData.Record(schema);		
 		mesg.put("sourceid", "device1");
@@ -52,8 +63,7 @@ public class TestAvro {
 	enum messagetype{REGISTRY , NOTIFICATION , TELEMETRY, EXCEPTION };
 	
 	@Test public void testAvroMapConversion() throws IOException{
-		Schema schema = new Schema.Parser().parse(TestAvro.class.getResourceAsStream("/CustomMessage.avsc"));
-		
+			
 		//create json
 		GenericRecord mesg = new GenericData.Record(schema);		
 		mesg.put("sourceid", "device1");
@@ -79,7 +89,6 @@ public class TestAvro {
 	
 	@Test public void testAvroJavaConversion() throws IOException{
 		
-		Schema schema = new Schema.Parser().parse(TestAvro.class.getResourceAsStream("/CustomMessage.avsc"));
 		GenericRecord mesg = new GenericData.Record(schema);		
 		mesg.put("sourceid", "device1");
 		mesg.put("payload", "{\"device\":\"6c21e538-4b7b-4e87-958f-b8c868f50f2e\",\"event\":\"switch\",\"value\":\"on\",\"date\":\"2016-09-01T21:47:06.061Z\",\"name\":\"Maya's Room Camera\"}");
@@ -100,7 +109,7 @@ public class TestAvro {
 	}
 	
 	@Test public void testParser() throws Exception{
-		Schema schema = new Schema.Parser().parse(TestAvro.class.getResourceAsStream("/CustomMessage.avsc"));
+
 		GenericRecord mesg = new GenericData.Record(schema);		
 		mesg.put("sourceid", "device1");
 		mesg.put("payload", "{\"device\":\"6c21e538-4b7b-4e87-958f-b8c868f50f2e\",\"event\":\"switch\",\"value\":\"on\",\"date\":\"2016-09-01T21:47:06.061Z\",\"name\":\"Maya's Room Camera\"}");
