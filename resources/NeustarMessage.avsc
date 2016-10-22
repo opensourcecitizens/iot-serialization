@@ -1,0 +1,50 @@
+{"namespace": "avro.v0.0.4_20161020",
+ "type": "record",
+ "name": "NeustarMessage",
+ "fields": [
+     {"name": "messageid", "type": "string"},
+     {"name": "sourceid", "type": "string"},
+     {"name": "payload",  "type": "string", "default":"" },
+
+     { "name": "registrypayload", "type":[
+     {  
+  		"type":"record",
+  		"name":"RemoteRequest",
+  		"namespace":"remoteRequest.v.0.0.1_20161011",
+  	"fields":[  
+     {  
+        "name":"path",
+        "type":"string"
+     },
+     {  
+        "name":"verb",
+        "type":["string","null"]
+     },
+     {  
+        "name":"payload",
+        "type":"string"         
+     },
+     {  
+        "name":"header",
+        "type":["string","null"]
+     },
+     {  
+        "name":"txId",
+        "type":"string"
+     },
+     {  
+        "name":"deviceId",
+        "type":"string"
+     }
+  			]
+		}
+     ,"null"]
+     },
+     { "name": "messagetype", "type":
+     		{"type": "enum","name": "messagetype", "symbols" : [ "REGISTRY_GET", "REGISTRY_POST","REGISTRY_PUT","REGISTRY_RESPONSE", "NOTIFICATION" , "TELEMETRY", "EXCEPTION" ] }
+     },
+     {
+       "name": "createdate","type": "string"
+     }
+ ]
+}

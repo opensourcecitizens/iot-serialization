@@ -13,6 +13,7 @@ import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericData;
 import org.apache.avro.generic.GenericDatumReader;
 import org.apache.avro.generic.GenericRecord;
+import org.apache.avro.generic.GenericRecordBuilder;
 import org.apache.avro.io.Decoder;
 import org.apache.avro.io.DecoderFactory;
 import org.apache.avro.specific.SpecificDatumReader;
@@ -86,6 +87,66 @@ public class TestAvro {
 		Assert.assertEquals(map.get("id"), mesg.get("id"));
 		}
 	
+	
+	@Test public void testMapToGenericRecordConversion() throws IOException{
+		
+		//create json
+		GenericRecord mesg = new GenericData.Record(schema);		
+		mesg.put("sourceid", "device1");
+		mesg.put("payload", "{\"device\":\"6c21e538-4b7b-4e87-958f-b8c868f50f2e\",\"event\":\"switch\",\"value\":\"on\",\"date\":\"2016-09-01T21:47:06.061Z\",\"name\":\"Maya's Room Camera\"}");
+		mesg.put("messagetype", "EXCEPTION");
+		mesg.put("createdate",  DateFormat.getDateInstance().format(new Date())+"");
+		mesg.put("messageid", UUID.randomUUID()+"");
+
+		System.out.println(mesg.toString());
+		byte[] avro = AvroUtils.serializeJson(mesg.toString(), schema);
+		
+		Map<String,?> map = AvroUtils.avroToJava(avro, schema, Map.class);
+		ObjectMapper mapper = new ObjectMapper();
+		String json = mapper.writeValueAsString( map);
+		byte[] avro2 = AvroUtils.serializeJson(json, schema);
+		
+		GenericRecord record = AvroUtils.avroToJava(avro2, schema);
+
+	
+        
+		//Assert.assertEquals(mesg.get("payload"), record.get("payload"));
+		Assert.assertEquals(mesg.get("id"), record.get("id"));
+		}
+	
+	
+	@Test public void testMapToGenericRecordConversionIntoParent() throws IOException{
+		
+		//create json
+		GenericRecord mesg = new GenericData.Record(schema);		
+		mesg.put("sourceid", "device1");
+		mesg.put("payload", "{\"device\":\"6c21e538-4b7b-4e87-958f-b8c868f50f2e\",\"event\":\"switch\",\"value\":\"on\",\"date\":\"2016-09-01T21:47:06.061Z\",\"name\":\"Maya's Room Camera\"}");
+		mesg.put("messagetype", "EXCEPTION");
+		mesg.put("createdate",  DateFormat.getDateInstance().format(new Date())+"");
+		mesg.put("messageid", UUID.randomUUID()+"");
+
+		System.out.println(mesg.toString());
+		byte[] avro = AvroUtils.serializeJson(mesg.toString(), schema);
+		
+		Map<String,?> map = AvroUtils.avroToJava(avro, schema, Map.class);
+		ObjectMapper mapper = new ObjectMapper();
+		String json = mapper.writeValueAsString( map);
+		byte[] avro2 = AvroUtils.serializeJson(json, schema);
+		
+		GenericRecord record = AvroUtils.avroToJava(avro2, schema);
+
+	
+        
+		//Assert.assertEquals(mesg.get("payload"), record.get("payload"));
+		Assert.assertEquals(mesg.get("id"), record.get("id"));
+		
+		
+		
+		
+
+		
+		
+		}
 	
 	@Test public void testAvroJavaConversion() throws IOException{
 		
