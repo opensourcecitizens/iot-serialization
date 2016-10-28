@@ -1,14 +1,22 @@
 package io.parser.avro.phoenix;
 
+import java.io.IOException;
 import java.sql.PreparedStatement;
-
+import java.sql.SQLException;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Logger;
 
 import org.apache.avro.Schema;
 import org.apache.avro.Schema.Type;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.codehaus.jackson.JsonGenerationException;
+import org.codehaus.jackson.map.JsonMappingException;
+import org.codehaus.jackson.map.ObjectMapper;
 
 public class AvroToPhoenixMap {
+	Log logger = LogFactory.getLog(AvroToPhoenixMap.class);
 	//Schema.Type[] avroTypes = Schema.Type.values();
 	
 	public String translate(Type type){
@@ -45,10 +53,10 @@ public class AvroToPhoenixMap {
 			System.out.println(filedType.getName());
 			try{
 			switch(filedType.getName().toUpperCase()){
-			case "RECORD":	/*ignore*/; break;	
+			case "RECORD":	prepStmt.setString(i, toJson(map.get(key)))	; break;	
 			case "ENUM":	prepStmt.setString(i, ((Enum<?>)map.get(key)).toString()); break;	
 			case "ARRAY":	/*ignore*/; break;	
-			case "MAP":		/*ignore*/; break;	
+			case "MAP":		prepStmt.setString(i, toJson(map.get(key))); break;	
 			case "UNION":	/*ignore*/; break;	
 			case "FIXED":	/*ignore*/; break;	
 			case "STRING":	prepStmt.setString(i, (String)map.get(key)); break;		
@@ -61,12 +69,24 @@ public class AvroToPhoenixMap {
 			case "NULL": 	/*ignore*/; break;	
 			}
 			}catch(Exception e){
-				//TODO better exception handling
-				e.printStackTrace();
+				try {
+					prepStmt.setString(i, "Translation Error caused by: "+e.getMessage());
+				} catch (SQLException e1) {
+					//e1.printStackTrace();
+				} finally{
+					logger.error(e,e);
+				}
 			}
 			
 			i++;
 		}
 	}
+	
 
+	private String toJson(Object map) throws JsonGenerationException, JsonMappingException, IOException{
+		ObjectMapper mapper = new ObjectMapper();
+		return mapper.writeValueAsString(map);
+	}
+
+	
 }
