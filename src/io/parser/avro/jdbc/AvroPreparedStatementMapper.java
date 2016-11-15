@@ -1,4 +1,4 @@
-package io.parser.avro.phoenix;
+package io.parser.avro.jdbc;
 
 import java.io.IOException;
 import java.sql.PreparedStatement;
@@ -15,33 +15,8 @@ import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 
-public class AvroToPhoenixMap {
-	Log logger = LogFactory.getLog(AvroToPhoenixMap.class);
-	//Schema.Type[] avroTypes = Schema.Type.values();
-	
-	public String translate(Type type){
-		//RECORD ENUM ARRAY MAP UNION FIXED STRING BYTES STRING INT LONG DOUBLE FLOAT BOOLEAN NULL
-		String ret = null;
-		switch(type.getName()){
-		case "RECORD":	ret=""; break;	
-		case "ENUM":	ret=""; break;	
-		case "ARRAY":	ret=""; break;	
-		case "MAP":		ret=""; break;	
-		case "UNION":	ret=""; break;	
-		case "FIXED":	ret=""; break;	
-		case "STRING":	ret=""; break;	
-		case "BYTES":	ret=""; break;	
-		case "INT":		ret=""; break;	
-		case "LONG":	ret=""; break;	
-		case "DOUBLE":	ret=""; break;	
-		case "FLOAT":	ret=""; break;	
-		case "BOOLEAN":	ret=""; break;	
-		case "NULL": 	ret=""; break;	
-		default: ret = null;
-		}
-		
-		return ret;
-	}
+public class AvroPreparedStatementMapper {
+	Log logger = LogFactory.getLog(AvroPreparedStatementMapper.class);
 	
 	public void translate(PreparedStatement prepStmt, Map<String, ?> map, Schema avroSchema){
 		
@@ -50,14 +25,14 @@ public class AvroToPhoenixMap {
 		
 		for(String key: keys){
 			Type filedType = avroSchema.getField(key).schema().getType();
-			System.out.println(filedType.getName());
+			System.out.println(key+":"+filedType.getName());
 			try{
 			switch(filedType.getName().toUpperCase()){
 			case "RECORD":	prepStmt.setString(i, toJson(map.get(key)))	; break;	
-			case "ENUM":	prepStmt.setString(i, ((Enum<?>)map.get(key)).toString()); break;	
+			case "ENUM":	prepStmt.setString(i, ((String)map.get(key))) ; break;	
 			case "ARRAY":	/*ignore*/; break;	
 			case "MAP":		prepStmt.setString(i, toJson(map.get(key))); break;	
-			case "UNION":	/*ignore*/; break;	
+			case "UNION":	prepStmt.setString(i, toJson(map.get(key))); break;	
 			case "FIXED":	/*ignore*/; break;	
 			case "STRING":	prepStmt.setString(i, (String)map.get(key)); break;		
 			case "BYTES":	prepStmt.setBytes(i, (byte[]) map.get(key)); break;		

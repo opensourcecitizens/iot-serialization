@@ -1,4 +1,4 @@
-{"namespace": "avro.v0.1",
+{"namespace": "avro.v0.0.1",
  "type": "record",
  "name": "NeustarMessage",
  "fields": [

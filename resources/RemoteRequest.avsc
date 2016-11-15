@@ -3,22 +3,25 @@
   "name":"RemoteRequest",
   "namespace":"remoteRequest.v.0.0.1_20161011",
   "fields":[  
-     {  
+ {  
         "name":"path",
         "type":"string"
      },
      {  
-        "name":"verb","type":["string","null"],"default":"null"
+        "name":"verb",
+        "type":"string"
+     },
+     {  
+        "name":"statusCode",
+        "type":"int"
      },
      {  
         "name":"payload",
         "type":"string"         
      },
      {  
-        "name":"header","type":["string","null"],"default":"null"
-     },
-     {  
-        "name":"statusCode","type":["string","null"],"default":"null"
+        "name":"header",
+        "type":"string"
      },
      {  
         "name":"txId",

@@ -31,7 +31,7 @@ public class TestAvroSchema {
 				 schema_remoteReq = new Schema.Parser().parse(new URL("https://s3-us-west-2.amazonaws.com/iot-dev-avroschema/registry-to-spark/versions/current/remoterequest.avsc").openStream());
 				
 				 schema = new Schema.Parser().parse(new URL("https://s3-us-west-2.amazonaws.com/iot-dev-avroschema/versions/current/NeustarMessage.avsc").openStream());
-			 	//Schema schema = new Schema.Parser().parse(new File("/Users/kndungu/Documents/workspace/iot-serialization/resources/NeustarMessage.avsc"));
+			 	 //schema = new Schema.Parser().parse(new File("/Users/kndungu/Documents/workspace/iot-serialization/resources/NeustarMessage.avsc"));
 			 	
 	}
 	
@@ -45,6 +45,7 @@ public class TestAvroSchema {
 		remotemesg.put("deviceId","000000a9-2c7a-4654-8f34-f6e1d1ad8ad7/YS9saWdodA==");
 		remotemesg.put("header","{\"API-KEY\": \"0\",\"Content-Type\": \"application/json\"}");
 		remotemesg.put("txId","someTextid");
+		remotemesg.put("statusCode",0);
 		remotemesg.put("verb","update");
 		
 		byte[] payloadavro = AvroUtils.serializeJava(remotemesg, schema_remoteReq);
